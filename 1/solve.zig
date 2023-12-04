@@ -16,11 +16,8 @@ fn solve(line: []const u8, second: bool) !u8 {
                 }
             }
         }
-
         if (digit != null){
-            if (first == null) {
-                first = digit;
-            }
+            if (first == null) first = digit;
             last = digit;
         }
     }
