@@ -1,35 +1,31 @@
+import sys
 
 def f(m, x):
     ans = 0
     for p, s in enumerate(m):
         to_add = s
-        for i in range(p+1):
-            to_add *= x ** i
+        for i in range(p):
+            to_add *= (x - i)
         ans += to_add
     return ans
 
-def prod(x, i):
-    ans = 1
-    for j in range(i):
-        ans *= (x - j)
-    return ans
+lines = sys.stdin.readlines()
 
-v = [1, 3, 6, 10, 15, 21, 16]
-# v = [0, 3, 6, 9, 12, 15, 12]
-# v = [10, 13, 16, 21, 30, 45, 34]
+ans1 = 0
+ans2 = 0
+for line in lines:
+    v = [int(a) for a in line.split(' ')]
+    m = [v[0]]
+    prod = 1
+    for x in range(1, len(v) - 1):
+        # a + b * 2 + c * (2-1) * 2 = v[2]
+        # prod(x) = x * (x-1) * ... * 1
+        # f_(x) + new_m * prod(x) = v[x]
+        # new_m = (v[x] - f_(x)) / prod(x)
+        prod *= x
+        m.append((v[x] - f(m, x)) / prod)
+    ans1 += f(m, len(v))
+    ans2 += f(m, -1)
 
-m = [v[0]]
-for x in range(1, len(v)):
-    print(m)
-    # print('m: ', m)
-    # a + b * x + c * (x-1) * x = v[2]
-    # prod(x, i) = x * (x-1) * ... * (x - (i - 1))
-    # f_(x) + new_m * prod(x, i) = v[x]
-    # new_m = (v[x] - f_(x)) / prod(x, i)
-    new_m = (v[x] - f(m, x)) / prod(x, x)
-    if new_m == 0:
-        break
-    m.append(new_m)
-
-m = m[:4]
-print([f(m, i) for i in range(len(v))])
+print(ans1)
+print(ans2)
