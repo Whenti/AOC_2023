@@ -1,31 +1,23 @@
 import sys
+import math
 
-def f(m, x):
-    ans = 0
-    for p, s in enumerate(m):
-        to_add = s
-        for i in range(p):
-            to_add *= (x - i)
-        ans += to_add
-    return ans
+def f(coeffs, x):
+    multiplier = [1]
+    for i in range(len(coeffs)):
+        multiplier.append(multiplier[i] * (x-i))
+    return sum(coeff * multiplier[i] for i, coeff in enumerate(coeffs))
 
-lines = sys.stdin.readlines()
-
-ans1 = 0
-ans2 = 0
-for line in lines:
+ans1, ans2 = 0, 0
+for line in sys.stdin.readlines():
     v = [int(a) for a in line.split(' ')]
-    m = [v[0]]
-    prod = 1
-    for x in range(1, len(v) - 1):
-        # a + b * 2 + c * (2-1) * 2 = v[2]
-        # prod(x) = x * (x-1) * ... * 1
-        # f_(x) + new_m * prod(x) = v[x]
-        # new_m = (v[x] - f_(x)) / prod(x)
-        prod *= x
-        m.append((v[x] - f(m, x)) / prod)
-    ans1 += f(m, len(v))
-    ans2 += f(m, -1)
+    coeffs = [v[0]]
+    for x in range(1, len(v)):
+        # v[2] = a + b * 2 + c * (2-1) * 2
+        # v[2] = f_(2) + c * 2!
+        # c = (v[2] - f_(2)) / 2!
+        coeffs.append((v[x] - f(coeffs, x)) / math.factorial(x))
+    ans1 += f(coeffs, len(v))
+    ans2 += f(coeffs, -1)
 
-print(ans1)
-print(ans2)
+print("part 1:", round(ans1))
+print("part 2:", round(ans2))
