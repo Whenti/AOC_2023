@@ -1,5 +1,34 @@
-#include "utils.h"
+#include <bits/stdc++.h>
+#define ll long long
+
 using namespace std;
+
+ll gcd(ll const& a, ll const& b) { if (b == 0) return a; return gcd(b, a % b); }
+ll lcm(ll const& a, ll const& b) { return (a * b) / gcd(a, b); }
+ll lcm(vector<int> const& v) {
+  ll a = v[0];
+  for (auto const& x : v) a = lcm(a, x);
+  return a;
+}
+template<typename T> bool readline(T& x) { return bool(getline(cin, x)); }
+bool readline() { std::string x; return readline(x); }
+
+template<typename T> bool read(T& x) { return bool(cin >> x); }
+
+vector<string> split(string const& str, char const& c) {
+  istringstream iss(str);
+  string el;
+  vector<string> ret(0);
+  while (getline(iss, el, c)) ret.push_back(el);
+  return ret;
+}
+
+void replace(string& s, string from, string to){
+  for(char const& c: from) {
+    size_t p;
+    while ((p = s.find(c)) != string::npos) s.replace(p, 1, to);
+  }
+}
 
 int main() {
   string path, from, to;
@@ -22,7 +51,7 @@ int main() {
     if (++cursor >= path.size()) cursor = 0;
     idx++;
   }
-  print("part 1:", idx);
+  cout << "part 1: " << idx << endl;
 
   // part 2
   vector<int> steps;
@@ -36,6 +65,6 @@ int main() {
     }
     steps.push_back(idx);
   }
-  print("part 2:", lcm(steps));
+  cout << "part 2: " << lcm(steps) << endl;
   return 0;
 }
