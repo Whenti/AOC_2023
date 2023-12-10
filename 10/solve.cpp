@@ -10,7 +10,7 @@ v2int operator+(v2int const& d1, v2int const& d2) {
 v2int operator-(v2int const& d) {
   return make_pair(- d.first, - d.second);
 }
-const v2int UP = make_pair(-1, 0), DOWN = -UP, LEFT = make_pair(0, -1), RIGHT = -LEFT;
+const v2int NONE=make_pair(0, 0), UP = make_pair(-1, 0), DOWN = -UP, LEFT = make_pair(0, -1), RIGHT = -LEFT;
 const array<v2int, 4> DIRECTIONS = {UP, RIGHT, DOWN, LEFT};
 
 const map<char, pair<v2int, v2int>> MAP = {
@@ -22,23 +22,19 @@ const map<char, pair<v2int, v2int>> MAP = {
   make_pair('F', make_pair(DOWN, RIGHT))
 };
 
-bool is_out(vector<string> const& maze, v2int pos){
-  const auto [x, y] = pos;
-  return x<0 or y<0 or x>=maze.size() or y>=maze[x].size();
-}
-
 int main() {
   vector<string> maze = readall();
   v2int pos = make_pair(-1, -1);
   for (size_t x(0); pos.second == -1; ++x) pos = make_pair(x, index(it(maze[x]), 'S'));
 
+  // part 1
   map<v2int,set<v2int>> route;
-
-  v2int dir;
+  v2int dir = NONE;
   for(auto d: DIRECTIONS) {
-    v2int new_pos = pos + d;
-    if (is_out(maze, new_pos)) continue;
-    char c = maze[new_pos.first][new_pos.second];
+    v2int npos = pos + d;
+    if (npos.first<0 or npos.second<0 or npos.first>=maze.size() or npos.second>=maze[0].size())
+      continue;
+    char c = maze[npos.first][npos.second];
     if ( c != '.' && (MAP.at(c).first == -d || MAP.at(c).second == -d)) {
       dir = d;
       break;
@@ -57,32 +53,26 @@ int main() {
     route[pos].insert(dir);
     c = maze[pos.first][pos.second];
   }
-
-  // part 1
   cout << route.size()/2 << endl;
 
   // part 2
-  vector<vector<bool>> look_right(maze.size(), vector<bool>(maze[0].size(), false));
-  vector<vector<bool>> look_left=look_right;
-
-  vector<int> dir_to_look_at = {1, -1};
-  for(auto [pos, directions]: route) {
-    for (auto dir: directions) {
-      for (auto it = dir_to_look_at.begin(); it != dir_to_look_at.end();) {
-        auto& look_at = *it == 1 ? look_right : look_left;
-        v2int d = DIRECTIONS[(index(it(DIRECTIONS), dir) + *it)%4];
-        v2int explore = pos + d;
-        while(!is_out(maze, explore) and !route.contains(explore)) {
-          look_at[explore.first][explore.second] = true;
-          explore = explore+d;
-        }
-        if(is_out(maze, explore)) it = dir_to_look_at.erase(it);
-        else ++it;
+  // initially solved with a bruteforce method but this is much more elegant
+  // https://www.reddit.com/r/adventofcode/comments/18eza5g/2023_day_10_animated_visualization/
+  int count = 0;
+  dir = NONE;
+  for(auto i: range(maze.size())) {
+    bool inside = false;
+    for(auto j: range(maze[i].size())) {
+      v2int pos = make_pair(i, j);
+      if(route.contains(pos)){
+        if (dir == NONE) dir = route[pos].contains(DOWN) ? DOWN : UP;
+        if (route[pos].contains(dir)) inside = true;
+        else if (route[pos].contains(-dir)) inside = false;
       }
+      else if (inside) ++count;
     }
   }
-  auto& inner = (index(it(dir_to_look_at), 1) != -1) ? look_right : look_left;
-  cout << accumulate(it(inner), 0, lambda(x, y, x += std::count(it(y), true))) << endl;
+  cout << count << endl;
 
   return 0;
 }
