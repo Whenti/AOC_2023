@@ -75,23 +75,23 @@ std::string read_line(std::istream &p = std::cin) {
   return x;
 }
 
-std::vector<std::string> read_all(std::istream &p = std::cin) {
+std::vector<std::string> read_paragraph(std::istream &p = std::cin) {
   std::vector<std::string> v;
-  while (!p.fail())
-    v.push_back(read_line(p));
-  v.pop_back();
+  std::string s=read_line(p);
+  while (!p.fail() and s.size() > 0) {
+    v.push_back(s);
+    s = read_line(p);
+  }
   return v;
 }
 
-std::vector<std::string> read_until_empty(std::istream &p = std::cin) {
+std::vector<std::string> read_all(std::istream &p = std::cin) {
   std::vector<std::string> v;
-  std::string s=" ";
-  while (!p.fail() and s.size() > 0) {
-    s = read_line(p);
+  std::string s=read_line(p);
+  while (!p.fail()) {
     v.push_back(s);
+    s = read_line(p);
   }
-  
-  v.pop_back();
   return v;
 }
 

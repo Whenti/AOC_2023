@@ -17,17 +17,18 @@ int dist(string const& s1, string const& s2) {
 
 int find_reflection(vector<string> const& island, bool smudge) {
   for(auto i: range(1, island.size())) {
+    bool s = smudge;
     bool reflec = true;
     for(int j(1); i-j >= 0 && i+j-1 < island.size(); ++j) {
       if(island[i-j] != island[i+j-1]) {
-        if(dist(island[i-j], island[i+j-1]) == 1 && smudge) smudge = false;
+        if(dist(island[i-j], island[i+j-1]) == 1 && s) s = false;
         else {
           reflec = false; 
           break;
         }
       }
     }
-    if(reflec && !smudge) return i;
+    if(reflec && !s) return i;
   }
   return 0;
 }
@@ -41,7 +42,7 @@ int main() {
   int ans1 = 0;
   int ans2 = 0;
   while(!cin.fail()) {
-    vector<string> island = read_until_empty();
+    vector<string> island = read_paragraph();
     ans1 += solve(island, false);
     ans2 += solve(island, true);
   }
