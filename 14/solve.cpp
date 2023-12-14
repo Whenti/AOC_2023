@@ -46,7 +46,7 @@ int main() {
 
   // part 1
   vector<string> m = read_all();
-  ans1 = points(m);
+  ans1 = points(tilt_north(m));
 
   // part 2
   map<string, ll> states;
